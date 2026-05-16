@@ -1,0 +1,694 @@
+@prefix figo: <https://example.org/figo/palm-coein#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+#################################################################
+# Ontology metadata
+#################################################################
+
+figo:Ontology a owl:Ontology ;
+    rdfs:label "FIGO PALM-COEIN knowledge graph for abnormal uterine bleeding"@en ,
+               "비임신 가임기 여성의 비정상 자궁출혈 원인 분류를 위한 FIGO PALM-COEIN 지식그래프"@ko ;
+    dcterms:title "FIGO classification system (PALM-COEIN) for causes of abnormal uterine bleeding in nongravid women of reproductive age"@en ;
+    dcterms:creator "Munro MG, Critchley HOD, Broder MS, Fraser IS; FIGO Working Group on Menstrual Disorders" ;
+    dcterms:source "International Journal of Gynecology and Obstetrics 113 (2011) 3-13" ;
+    dcterms:description "A lightweight RDF/Turtle representation of the FIGO PALM-COEIN classification system, extracted for RAG retrieval and guideline-aware graph search."@en ;
+    dcterms:created "2026-05-13"^^xsd:date ;
+    owl:versionInfo "0.1 KG extraction from attached FIGO PALM-COEIN guideline article" .
+
+#################################################################
+# Core RDF classes
+#################################################################
+
+figo:ClassificationSystem a owl:Class ;
+    rdfs:label "Classification system"@en , "분류 체계"@ko .
+
+figo:ClassificationCategory a owl:Class ;
+    rdfs:label "Classification category"@en , "분류 범주"@ko .
+
+figo:StructuralCategory a owl:Class ;
+    rdfs:subClassOf figo:ClassificationCategory ;
+    rdfs:label "Structural PALM category"@en , "구조적 PALM 범주"@ko ;
+    skos:definition "A PALM-COEIN category generally defined by visually objective structural criteria, imaging, and/or histopathology."@en .
+
+figo:NonStructuralCategory a owl:Class ;
+    rdfs:subClassOf figo:ClassificationCategory ;
+    rdfs:label "Non-structural COEIN category"@en , "비구조적 COEIN 범주"@ko ;
+    skos:definition "A PALM-COEIN category generally not defined by imaging or histopathology."@en .
+
+figo:SymptomEntity a owl:Class ;
+    rdfs:label "Bleeding symptom entity"@en , "출혈 증상 엔티티"@ko .
+
+figo:ClinicalInvestigation a owl:Class ;
+    rdfs:label "Clinical investigation"@en , "임상 평가/검사"@ko .
+
+figo:NotationElement a owl:Class ;
+    rdfs:label "Notation element"@en , "표기 요소"@ko .
+
+figo:LeiomyomaType a owl:Class ;
+    rdfs:label "Leiomyoma subclassification type"@en , "자궁근종 세부 분류 유형"@ko .
+
+figo:EvidenceChunk a owl:Class ;
+    rdfs:label "Evidence chunk"@en , "근거 청크"@ko .
+
+#################################################################
+# Core RDF properties
+#################################################################
+
+figo:hasCategory a owl:ObjectProperty ;
+    rdfs:domain figo:ClassificationSystem ;
+    rdfs:range figo:ClassificationCategory ;
+    rdfs:label "has category"@en , "범주를 가짐"@ko .
+
+figo:hasGroup a owl:DatatypeProperty ;
+    rdfs:domain figo:ClassificationCategory ;
+    rdfs:range xsd:string ;
+    rdfs:label "has group"@en , "그룹"@ko .
+
+figo:hasCode a owl:DatatypeProperty ;
+    rdfs:domain figo:ClassificationCategory ;
+    rdfs:range xsd:string ;
+    rdfs:label "has code"@en , "코드"@ko .
+
+figo:hasAbbreviatedNotation a owl:DatatypeProperty ;
+    rdfs:label "has abbreviated notation"@en , "축약 표기"@ko .
+
+figo:hasFullNotation a owl:DatatypeProperty ;
+    rdfs:label "has full notation"@en , "전체 표기"@ko .
+
+figo:isDeterminedBy a owl:ObjectProperty ;
+    rdfs:domain figo:ClassificationCategory ;
+    rdfs:range figo:ClinicalInvestigation ;
+    rdfs:label "is determined by"@en , "평가/검사로 판정됨"@ko .
+
+figo:mayCauseOrContributeTo a owl:ObjectProperty ;
+    rdfs:domain figo:ClassificationCategory ;
+    rdfs:range figo:SymptomEntity ;
+    rdfs:label "may cause or contribute to"@en , "원인 또는 기여 요인일 수 있음"@ko .
+
+figo:hasSubtype a owl:ObjectProperty ;
+    rdfs:label "has subtype"@en , "하위 유형을 가짐"@ko .
+
+figo:subclassifiedBy a owl:ObjectProperty ;
+    rdfs:label "subclassified by"@en , "세부 분류 기준"@ko .
+
+figo:hasLeiomyomaType a owl:ObjectProperty ;
+    rdfs:domain figo:ClassificationCategory ;
+    rdfs:range figo:LeiomyomaType ;
+    rdfs:label "has leiomyoma type"@en , "자궁근종 유형을 가짐"@ko .
+
+figo:hasDiagnosticCriterion a owl:DatatypeProperty ;
+    rdfs:label "has diagnostic criterion"@en , "진단/분류 기준"@ko .
+
+figo:hasClinicalNote a owl:DatatypeProperty ;
+    rdfs:label "has clinical note"@en , "임상 메모"@ko .
+
+figo:hasEvidence a owl:ObjectProperty ;
+    rdfs:label "has evidence"@en , "근거를 가짐"@ko .
+
+figo:page a owl:DatatypeProperty ;
+    rdfs:range xsd:integer ;
+    rdfs:label "page"@en , "페이지"@ko .
+
+figo:quote a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "supporting quote"@en , "근거 문구"@ko .
+
+figo:mapsTo a owl:ObjectProperty ;
+    rdfs:label "maps to"@en , "매핑됨"@ko .
+
+figo:replacesTerm a owl:ObjectProperty ;
+    rdfs:label "replaces term"@en , "대체하는 용어"@ko .
+
+figo:shouldBeAbandoned a owl:DatatypeProperty ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "should be abandoned"@en , "사용 중단 권고"@ko .
+
+#################################################################
+# Classification system
+#################################################################
+
+figo:PALM_COEIN a figo:ClassificationSystem ;
+    rdfs:label "PALM-COEIN"@en , "PALM-COEIN"@ko ;
+    skos:definition "A FIGO classification system for causes of abnormal uterine bleeding in nongravid women of reproductive age."@en ;
+    figo:hasCategory figo:AUB_P , figo:AUB_A , figo:AUB_L , figo:AUB_M ,
+                     figo:AUB_C , figo:AUB_O , figo:AUB_E , figo:AUB_I , figo:AUB_N ;
+    figo:hasEvidence figo:ev_basic_system .
+
+#################################################################
+# Symptom entities and terminology
+#################################################################
+
+figo:AUB a figo:SymptomEntity ;
+    rdfs:label "Abnormal uterine bleeding"@en , "비정상 자궁출혈"@ko ;
+    skos:altLabel "AUB"@en ;
+    skos:definition "Bleeding from the uterine corpus that is abnormal in volume, regularity, and/or timing."@en ;
+    figo:hasSubtype figo:Acute_AUB , figo:Chronic_AUB , figo:Intermenstrual_Bleeding .
+
+figo:Acute_AUB a figo:SymptomEntity ;
+    rdfs:label "Acute abnormal uterine bleeding"@en , "급성 비정상 자궁출혈"@ko ;
+    skos:definition "An episode of heavy bleeding that, in the clinician's opinion, is sufficient in quantity to require immediate intervention to prevent further blood loss."@en ;
+    figo:hasEvidence figo:ev_acute_aub .
+
+figo:Chronic_AUB a figo:SymptomEntity ;
+    rdfs:label "Chronic abnormal uterine bleeding"@en , "만성 비정상 자궁출혈"@ko ;
+    skos:definition "Bleeding from the uterine corpus that is abnormal in volume, regularity, and/or timing and has been present for the majority of the previous six months."@en ;
+    figo:hasDiagnosticCriterion "Present for the majority of the past 6 months; does not require immediate intervention in the clinician's opinion."@en ;
+    figo:hasEvidence figo:ev_chronic_aub .
+
+figo:Intermenstrual_Bleeding a figo:SymptomEntity ;
+    rdfs:label "Intermenstrual bleeding"@en , "월경간 출혈"@ko ;
+    skos:altLabel "IMB"@en ;
+    skos:definition "Bleeding that occurs between clearly defined cyclic and predictable menses."@en ;
+    figo:replacesTerm figo:Metrorrhagia ;
+    figo:hasEvidence figo:ev_imb .
+
+figo:Heavy_Menstrual_Bleeding a figo:SymptomEntity ;
+    rdfs:label "Heavy menstrual bleeding"@en , "월경과다/과다월경출혈"@ko ;
+    skos:altLabel "HMB"@en ;
+    figo:replacesTerm figo:Menorrhagia .
+
+figo:Dysfunctional_Uterine_Bleeding a figo:SymptomEntity ;
+    rdfs:label "Dysfunctional uterine bleeding"@en , "기능성 자궁출혈"@ko ;
+    skos:altLabel "DUB"@en ;
+    figo:shouldBeAbandoned true ;
+    figo:hasClinicalNote "Previously used when there was no systemic or locally definable structural cause; the FIGO process recommends abandoning this term."@en ;
+    figo:hasEvidence figo:ev_dub_abandoned .
+
+figo:Menorrhagia a figo:SymptomEntity ;
+    rdfs:label "Menorrhagia"@en ;
+    figo:shouldBeAbandoned true .
+
+figo:Metrorrhagia a figo:SymptomEntity ;
+    rdfs:label "Metrorrhagia"@en ;
+    figo:shouldBeAbandoned true .
+
+#################################################################
+# PALM structural categories
+#################################################################
+
+figo:AUB_P a figo:StructuralCategory ;
+    rdfs:label "AUB-P: Polyp"@en , "AUB-P: 폴립"@ko ;
+    skos:altLabel "Polyp"@en , "endometrial polyp"@en , "endocervical polyp"@en , "자궁내막 폴립"@ko , "자궁경부내 폴립"@ko ;
+    figo:hasCode "P" ;
+    figo:hasGroup "PALM" ;
+    skos:definition "Endometrial or endocervical polyps categorized as present or absent in the basic PALM-COEIN classification."@en ;
+    figo:hasDiagnosticCriterion "Presence or absence is defined by one or a combination of ultrasound and hysteroscopic imaging, with or without histopathology."@en ;
+    figo:hasClinicalNote "Potential future subclassification variables include dimension, location, number, morphology, and histology."@en ;
+    figo:isDeterminedBy figo:Ultrasound , figo:Hysteroscopy , figo:SIS , figo:Histopathology ;
+    figo:mayCauseOrContributeTo figo:AUB ;
+    figo:hasEvidence figo:ev_polyp .
+
+figo:AUB_A a figo:StructuralCategory ;
+    rdfs:label "AUB-A: Adenomyosis"@en , "AUB-A: 자궁선근증"@ko ;
+    skos:altLabel "Adenomyosis"@en , "자궁선근증"@ko ;
+    figo:hasCode "A" ;
+    figo:hasGroup "PALM" ;
+    skos:definition "Adenomyosis included in the PALM-COEIN classification because sonographic and MRI-based diagnostic criteria exist."@en ;
+    figo:hasDiagnosticCriterion "Sonographic criteria are proposed as the minimum requirements for assigning adenomyosis; A1 requires three criteria to be met in the article's uterine assessment section."@en ;
+    figo:hasClinicalNote "The relationship between adenomyosis and AUB is described as unclear; additional research and standardized imaging/histopathology criteria are needed."@en ;
+    figo:isDeterminedBy figo:Transvaginal_Ultrasound , figo:MRI , figo:Histopathology ;
+    figo:mayCauseOrContributeTo figo:AUB ;
+    figo:hasEvidence figo:ev_adenomyosis .
+
+figo:AUB_L a figo:StructuralCategory ;
+    rdfs:label "AUB-L: Leiomyoma"@en , "AUB-L: 자궁근종"@ko ;
+    skos:altLabel "Leiomyoma"@en , "myoma"@en , "fibroid"@en , "자궁근종"@ko ;
+    figo:hasCode "L" ;
+    figo:hasGroup "PALM" ;
+    skos:definition "Benign fibromuscular tumors of the myometrium categorized by presence/absence and, when needed, by relationship to the endometrial cavity, myometrium, and serosa."@en ;
+    figo:hasDiagnosticCriterion "Primary classification reflects presence or absence of one or more leiomyomas confirmed by sonographic examination."@en ;
+    figo:subclassifiedBy figo:Leiomyoma_Primary_Classification , figo:Leiomyoma_Secondary_Classification , figo:Leiomyoma_Tertiary_Classification ;
+    figo:hasSubtype figo:AUB_LSM , figo:AUB_LO ;
+    figo:hasLeiomyomaType figo:Leiomyoma_Type_0 , figo:Leiomyoma_Type_1 , figo:Leiomyoma_Type_2 , figo:Leiomyoma_Type_3 , figo:Leiomyoma_Type_4 , figo:Leiomyoma_Type_5 , figo:Leiomyoma_Type_6 , figo:Leiomyoma_Type_7 , figo:Leiomyoma_Type_8 ;
+    figo:isDeterminedBy figo:Ultrasound , figo:Transvaginal_Ultrasound , figo:Transabdominal_Ultrasound , figo:SIS , figo:Hysteroscopy , figo:MRI ;
+    figo:mayCauseOrContributeTo figo:AUB ;
+    figo:hasEvidence figo:ev_leiomyoma .
+
+figo:AUB_LSM a figo:StructuralCategory ;
+    rdfs:label "AUB-LSM: Submucosal leiomyoma"@en , "AUB-LSM: 점막하 자궁근종"@ko ;
+    skos:altLabel "Submucosal myoma"@en , "SM"@en ;
+    figo:hasCode "L-SM" ;
+    skos:definition "Leiomyoma involving or impacting the endometrial cavity."@en ;
+    figo:hasClinicalNote "Submucosal lesions are generally considered most likely to contribute to AUB."@en ;
+    figo:isDeterminedBy figo:SIS , figo:Hysteroscopy , figo:TVUS , figo:MRI ;
+    figo:mayCauseOrContributeTo figo:AUB ;
+    figo:hasEvidence figo:ev_lsm_lo .
+
+figo:AUB_LO a figo:StructuralCategory ;
+    rdfs:label "AUB-LO: Other leiomyoma"@en , "AUB-LO: 기타 자궁근종"@ko ;
+    skos:altLabel "O: Other"@en ;
+    figo:hasCode "L-O" ;
+    skos:definition "Leiomyomas that do not impact the endometrial cavity in the secondary leiomyoma classification."@en ;
+    figo:hasClinicalNote "Includes non-submucosal leiomyomas such as intramural, subserosal, cervical, broad ligament, or parasitic lesions depending on tertiary type."@en .
+
+figo:AUB_M a figo:StructuralCategory ;
+    rdfs:label "AUB-M: Malignancy and hyperplasia"@en , "AUB-M: 악성종양 및 과형성"@ko ;
+    skos:altLabel "Malignancy and hyperplasia"@en , "atypical endometrial hyperplasia"@en , "endometrial carcinoma"@en , "leiomyosarcoma"@en ;
+    figo:hasCode "M" ;
+    figo:hasGroup "PALM" ;
+    skos:definition "Premalignant hyperplastic or malignant processes identified during investigation of reproductive-aged women with AUB."@en ;
+    figo:hasDiagnosticCriterion "Classified as AUB-M when a premalignant hyperplastic or malignant process is identified; detailed classification should use appropriate WHO or FIGO disease-specific systems."@en ;
+    figo:isDeterminedBy figo:Endometrial_Sampling , figo:Histopathology , figo:Hysteroscopy ;
+    figo:mayCauseOrContributeTo figo:AUB ;
+    figo:hasEvidence figo:ev_malignancy_hyperplasia .
+
+#################################################################
+# COEIN non-structural categories
+#################################################################
+
+figo:AUB_C a figo:NonStructuralCategory ;
+    rdfs:label "AUB-C: Coagulopathy"@en , "AUB-C: 응고장애"@ko ;
+    skos:altLabel "Coagulopathy"@en , "systemic disorder of hemostasis"@en , "전신 지혈장애"@ko ;
+    figo:hasCode "C" ;
+    figo:hasGroup "COEIN" ;
+    skos:definition "Systemic disorders of hemostasis that may be associated with AUB, including inherited bleeding disorders and anticoagulant-associated bleeding by convention."@en ;
+    figo:hasDiagnosticCriterion "Screen first using structured history; positive screens may require hematology consultation and tests such as von Willebrand factor and ristocetin cofactor."@en ;
+    figo:hasClinicalNote "Women using anticoagulant therapy are categorized as C1 by convention, even though the intervention is iatrogenic."@en ;
+    figo:isDeterminedBy figo:Structured_Hemostasis_History , figo:Von_Willebrand_Factor_Test , figo:Ristocetin_Cofactor_Test , figo:Hematologist_Consultation ;
+    figo:mayCauseOrContributeTo figo:AUB , figo:Heavy_Menstrual_Bleeding ;
+    figo:hasEvidence figo:ev_coagulopathy .
+
+figo:AUB_O a figo:NonStructuralCategory ;
+    rdfs:label "AUB-O: Ovulatory dysfunction"@en , "AUB-O: 배란장애"@ko ;
+    skos:altLabel "Ovulatory dysfunction"@en , "disorder of ovulation"@en , "배란 기능 이상"@ko ;
+    figo:hasCode "O" ;
+    figo:hasGroup "COEIN" ;
+    skos:definition "Ovulatory dysfunction causing AUB, usually with unpredictable timing and variable amount of flow."@en ;
+    figo:hasDiagnosticCriterion "Predictable cyclic menses every 22-35 days are usually associated with ovulation; uncertain status can be assessed by timed serum progesterone or endometrial biopsy."@en ;
+    figo:hasClinicalNote "Potential related etiologies include PCOS, hypothyroidism, hyperprolactinemia, stress, obesity, anorexia, weight loss, extreme exercise, gonadal steroids, dopamine-metabolism drugs, adolescence, and menopause transition."@en ;
+    figo:isDeterminedBy figo:Structured_History , figo:Serum_Progesterone_Test , figo:Endometrial_Biopsy , figo:Thyroid_Function_Test , figo:Prolactin_Test , figo:Serum_Androgens_Test ;
+    figo:mayCauseOrContributeTo figo:AUB , figo:Heavy_Menstrual_Bleeding ;
+    figo:hasEvidence figo:ev_ovulatory_dysfunction .
+
+figo:AUB_E a figo:NonStructuralCategory ;
+    rdfs:label "AUB-E: Endometrial"@en , "AUB-E: 자궁내막 원인"@ko ;
+    skos:altLabel "Endometrial"@en , "primary endometrial disorder"@en , "자궁내막 기능 이상"@ko ;
+    figo:hasCode "E" ;
+    figo:hasGroup "COEIN" ;
+    skos:definition "Primary disorder of the endometrium, often considered when AUB occurs with predictable cyclic bleeding and no other definable causes are identified."@en ;
+    figo:hasDiagnosticCriterion "For this version of the system, diagnosis is probably determined by exclusion of other identifiable abnormalities in reproductive-aged women who seem to have normal ovulatory function."@en ;
+    figo:hasClinicalNote "Potential mechanisms include disturbed local endometrial hemostasis, altered vasoconstrictor/vasodilator production, accelerated clot lysis, inflammation, infection, local inflammatory response abnormalities, vasculogenesis abnormalities, and repair defects."@en ;
+    figo:isDeterminedBy figo:Diagnosis_By_Exclusion , figo:Endometrial_Sampling ;
+    figo:mayCauseOrContributeTo figo:AUB , figo:Heavy_Menstrual_Bleeding , figo:Intermenstrual_Bleeding ;
+    figo:hasEvidence figo:ev_endometrial .
+
+figo:AUB_I a figo:NonStructuralCategory ;
+    rdfs:label "AUB-I: Iatrogenic"@en , "AUB-I: 의인성"@ko ;
+    skos:altLabel "Iatrogenic"@en , "breakthrough bleeding"@en , "BTB"@en , "의인성 자궁출혈"@ko ;
+    figo:hasCode "I" ;
+    figo:hasGroup "COEIN" ;
+    skos:definition "AUB caused or contributed to by medical interventions, devices, or pharmacologic agents."@en ;
+    figo:hasDiagnosticCriterion "Classify as AUB-I when bleeding is associated with exogenous gonadal steroids, intrauterine systems/devices, or systemic/local agents, excluding anticoagulant-associated AUB which is conventionally categorized as AUB-C."@en ;
+    figo:hasClinicalNote "Major component is breakthrough bleeding during gonadal steroid therapy; possible causes include compliance issues, follicular activity, anticonvulsants, rifampin, griseofulvin, cigarette smoking, LNG-IUS early use, dopamine-metabolism drugs, and hormonal contraceptives."@en ;
+    figo:isDeterminedBy figo:Medication_History , figo:Device_History , figo:Structured_History ;
+    figo:mayCauseOrContributeTo figo:AUB , figo:Intermenstrual_Bleeding ;
+    figo:hasEvidence figo:ev_iatrogenic .
+
+figo:AUB_N a figo:NonStructuralCategory ;
+    rdfs:label "AUB-N: Not yet classified"@en , "AUB-N: 미분류"@ko ;
+    skos:altLabel "Not yet classified"@en , "미분류"@ko ;
+    figo:hasCode "N" ;
+    figo:hasGroup "COEIN" ;
+    skos:definition "Category for rare, poorly defined, inadequately examined, or not-yet-identified entities that may contribute to or cause AUB."@en ;
+    figo:hasClinicalNote "Examples include chronic endometritis, arteriovenous malformations, myometrial hypertrophy, and future entities defined by biochemical or molecular assays."@en ;
+    figo:isDeterminedBy figo:Diagnosis_By_Exclusion ;
+    figo:mayCauseOrContributeTo figo:AUB ;
+    figo:hasEvidence figo:ev_not_yet_classified .
+
+#################################################################
+# Leiomyoma subclassification resources
+#################################################################
+
+figo:Leiomyoma_Primary_Classification a figo:NotationElement ;
+    rdfs:label "Leiomyoma primary classification"@en , "자궁근종 1차 분류"@ko ;
+    skos:definition "Presence or absence of one or more leiomyomas regardless of location, number, or size."@en ;
+    figo:hasDiagnosticCriterion "Sonographic examination confirming one or more lesions is sufficient for L1 assignment."@en .
+
+figo:Leiomyoma_Secondary_Classification a figo:NotationElement ;
+    rdfs:label "Leiomyoma secondary classification"@en , "자궁근종 2차 분류"@ko ;
+    skos:definition "Distinguishes leiomyomas involving the endometrial cavity from other leiomyomas."@en ;
+    figo:hasSubtype figo:AUB_LSM , figo:AUB_LO .
+
+figo:Leiomyoma_Tertiary_Classification a figo:NotationElement ;
+    rdfs:label "Leiomyoma tertiary classification"@en , "자궁근종 3차 분류"@ko ;
+    skos:definition "Subclassification of leiomyomas by relationship to the endometrium, myometrium, and serosa; includes Wamsteker/ESHRE-derived submucosal types and added intramural, subserosal, transmural, and other types."@en .
+
+figo:Leiomyoma_Type_0 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 0"@en , "자궁근종 유형 0"@ko ;
+    figo:hasCode "0" ;
+    skos:definition "Pedunculated intracavitary leiomyoma attached to the endometrium by a narrow stalk."@en ;
+    figo:mapsTo figo:AUB_LSM .
+
+figo:Leiomyoma_Type_1 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 1"@en , "자궁근종 유형 1"@ko ;
+    figo:hasCode "1" ;
+    skos:definition "Submucosal leiomyoma with less than 50% intramural extension."@en ;
+    figo:mapsTo figo:AUB_LSM .
+
+figo:Leiomyoma_Type_2 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 2"@en , "자궁근종 유형 2"@ko ;
+    figo:hasCode "2" ;
+    skos:definition "Submucosal leiomyoma with at least 50% intramural extension."@en ;
+    figo:mapsTo figo:AUB_LSM .
+
+figo:Leiomyoma_Type_3 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 3"@en , "자궁근종 유형 3"@ko ;
+    figo:hasCode "3" ;
+    skos:definition "Leiomyoma that contacts the endometrium and is 100% intramural; totally extracavitary but abuts the endometrium."@en ;
+    figo:mapsTo figo:AUB_LO .
+
+figo:Leiomyoma_Type_4 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 4"@en , "자궁근종 유형 4"@ko ;
+    figo:hasCode "4" ;
+    skos:definition "Intramural leiomyoma entirely within the myometrium, with no extension to the endometrial surface or serosa."@en ;
+    figo:mapsTo figo:AUB_LO .
+
+figo:Leiomyoma_Type_5 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 5"@en , "자궁근종 유형 5"@ko ;
+    figo:hasCode "5" ;
+    skos:definition "Subserosal leiomyoma with at least 50% intramural component."@en ;
+    figo:mapsTo figo:AUB_LO .
+
+figo:Leiomyoma_Type_6 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 6"@en , "자궁근종 유형 6"@ko ;
+    figo:hasCode "6" ;
+    skos:definition "Subserosal leiomyoma with less than 50% intramural component."@en ;
+    figo:mapsTo figo:AUB_LO .
+
+figo:Leiomyoma_Type_7 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 7"@en , "자궁근종 유형 7"@ko ;
+    figo:hasCode "7" ;
+    skos:definition "Subserosal pedunculated leiomyoma attached to the serosa by a stalk."@en ;
+    figo:mapsTo figo:AUB_LO .
+
+figo:Leiomyoma_Type_8 a figo:LeiomyomaType ;
+    rdfs:label "Leiomyoma type 8"@en , "자궁근종 유형 8"@ko ;
+    figo:hasCode "8" ;
+    skos:definition "Other leiomyoma, including cervical lesions, round or broad ligament lesions without direct uterine attachment, and parasitic lesions."@en ;
+    figo:mapsTo figo:AUB_LO .
+
+figo:Hybrid_Leiomyoma_Notation a figo:NotationElement ;
+    rdfs:label "Hybrid leiomyoma notation"@en , "혼합형 자궁근종 표기"@ko ;
+    skos:definition "For leiomyomas impacting both endometrium and serosa, two numbers are listed separated by a hyphen; the first reflects endometrial relationship and the second reflects serosal relationship."@en ;
+    figo:hasClinicalNote "Example: 2-5 indicates a submucosal and subserosal leiomyoma, each with less than half the diameter in the endometrial and peritoneal cavities, respectively."@en .
+
+#################################################################
+# Investigation nodes
+#################################################################
+
+figo:Structured_History a figo:ClinicalInvestigation ;
+    rdfs:label "Structured history"@en , "구조화 병력청취"@ko .
+
+figo:Structured_Hemostasis_History a figo:ClinicalInvestigation ;
+    rdfs:label "Structured history for hemostasis disorder"@en , "지혈장애 선별 구조화 병력"@ko ;
+    skos:definition "Structured history used to screen for underlying disorders of hemostasis in patients with excessive menstrual bleeding."@en ;
+    figo:hasDiagnosticCriterion "Positive screen: heavy menstrual bleeding since menarche; or one of postpartum hemorrhage, surgical-related bleeding, dental-work bleeding; or two or more of bruising, epistaxis, frequent gum bleeding, family history of bleeding symptoms."@en .
+
+figo:Physical_Exam a figo:ClinicalInvestigation ;
+    rdfs:label "Physical examination"@en , "신체진찰"@ko .
+
+figo:Ultrasound a figo:ClinicalInvestigation ;
+    rdfs:label "Ultrasound"@en , "초음파"@ko .
+
+figo:Transvaginal_Ultrasound a figo:ClinicalInvestigation ;
+    rdfs:label "Transvaginal ultrasound"@en , "질식 초음파"@ko ;
+    skos:altLabel "TVUS"@en .
+
+figo:TVUS owl:sameAs figo:Transvaginal_Ultrasound .
+
+figo:Transabdominal_Ultrasound a figo:ClinicalInvestigation ;
+    rdfs:label "Transabdominal ultrasound"@en , "복부 초음파"@ko .
+
+figo:SIS a figo:ClinicalInvestigation ;
+    rdfs:label "Saline infusion sonography"@en , "식염수 주입 초음파"@ko ;
+    skos:altLabel "SIS"@en , "sonohysteroscopy"@en , "hysterosonography"@en .
+
+figo:Hysteroscopy a figo:ClinicalInvestigation ;
+    rdfs:label "Hysteroscopy"@en , "자궁경검사"@ko .
+
+figo:MRI a figo:ClinicalInvestigation ;
+    rdfs:label "Magnetic resonance imaging"@en , "자기공명영상"@ko ;
+    skos:altLabel "MRI"@en .
+
+figo:Histopathology a figo:ClinicalInvestigation ;
+    rdfs:label "Histopathology"@en , "조직병리"@ko .
+
+figo:Endometrial_Sampling a figo:ClinicalInvestigation ;
+    rdfs:label "Endometrial sampling"@en , "자궁내막 조직검사/샘플링"@ko .
+
+figo:Endometrial_Biopsy a figo:ClinicalInvestigation ;
+    rdfs:label "Endometrial biopsy"@en , "자궁내막 생검"@ko .
+
+figo:Serum_Progesterone_Test a figo:ClinicalInvestigation ;
+    rdfs:label "Serum progesterone test"@en , "혈청 프로게스테론 검사"@ko .
+
+figo:Complete_Blood_Count a figo:ClinicalInvestigation ;
+    rdfs:label "Complete blood count"@en , "전혈구검사"@ko ;
+    skos:altLabel "CBC"@en .
+
+figo:Hemoglobin_Hematocrit_Assay a figo:ClinicalInvestigation ;
+    rdfs:label "Hemoglobin and/or hematocrit assay"@en , "혈색소/헤마토크릿 검사"@ko .
+
+figo:Pregnancy_Test a figo:ClinicalInvestigation ;
+    rdfs:label "Pregnancy test"@en , "임신 검사"@ko ;
+    skos:altLabel "beta-hCG"@en .
+
+figo:Thyroid_Function_Test a figo:ClinicalInvestigation ;
+    rdfs:label "Thyroid function test"@en , "갑상샘 기능검사"@ko .
+
+figo:Prolactin_Test a figo:ClinicalInvestigation ;
+    rdfs:label "Prolactin test"@en , "프로락틴 검사"@ko .
+
+figo:Serum_Androgens_Test a figo:ClinicalInvestigation ;
+    rdfs:label "Serum androgens test"@en , "혈청 안드로겐 검사"@ko .
+
+figo:Von_Willebrand_Factor_Test a figo:ClinicalInvestigation ;
+    rdfs:label "von Willebrand factor test"@en , "폰빌레브란트 인자 검사"@ko .
+
+figo:Ristocetin_Cofactor_Test a figo:ClinicalInvestigation ;
+    rdfs:label "Ristocetin cofactor test"@en , "리스토세틴 보조인자 검사"@ko .
+
+figo:Hematologist_Consultation a figo:ClinicalInvestigation ;
+    rdfs:label "Hematologist consultation"@en , "혈액내과 협진"@ko .
+
+figo:Medication_History a figo:ClinicalInvestigation ;
+    rdfs:label "Medication history"@en , "약물력"@ko .
+
+figo:Device_History a figo:ClinicalInvestigation ;
+    rdfs:label "Device history"@en , "의료기기/자궁내 장치 사용력"@ko .
+
+figo:Diagnosis_By_Exclusion a figo:ClinicalInvestigation ;
+    rdfs:label "Diagnosis by exclusion"@en , "배제진단"@ko .
+
+#################################################################
+# Investigation workflow nodes
+#################################################################
+
+figo:Initial_AUB_Assessment a figo:ClinicalInvestigation ;
+    rdfs:label "Initial AUB assessment"@en , "AUB 초기 평가"@ko ;
+    skos:definition "Initial assessment of suspected AUB includes excluding pregnancy and non-uterine bleeding sources, evaluating anemia, and then systematically addressing PALM-COEIN components."@en ;
+    figo:hasSubtype figo:Pregnancy_Test , figo:Hemoglobin_Hematocrit_Assay , figo:Complete_Blood_Count , figo:Structured_History , figo:Physical_Exam ;
+    figo:hasEvidence figo:ev_general_assessment .
+
+figo:Uterine_Evaluation a figo:ClinicalInvestigation ;
+    rdfs:label "Uterine evaluation"@en , "자궁 평가"@ko ;
+    skos:definition "Evaluation guided by patient age, ovulatory disorder, risk factors for hyperplasia/malignancy, structural anomaly risk, and response to prior medical therapy."@en ;
+    figo:hasSubtype figo:Endometrial_Biopsy , figo:Transvaginal_Ultrasound , figo:SIS , figo:Hysteroscopy , figo:MRI ;
+    figo:hasEvidence figo:ev_uterine_evaluation .
+
+figo:Endometrial_Cavity_Structure_Evaluation a figo:ClinicalInvestigation ;
+    rdfs:label "Evaluation of endometrial cavity structure"@en , "자궁내막강 구조 평가"@ko ;
+    skos:definition "Structural evaluation to identify endometrial/endocervical polyps and submucosal leiomyomas that could contribute to AUB."@en ;
+    figo:hasSubtype figo:Transvaginal_Ultrasound , figo:SIS , figo:Hysteroscopy , figo:MRI ;
+    figo:hasEvidence figo:ev_cavity_evaluation .
+
+figo:Myometrial_Assessment a figo:ClinicalInvestigation ;
+    rdfs:label "Myometrial assessment"@en , "자궁근층 평가"@ko ;
+    skos:definition "Myometrium is assessed primarily with TVUS and transabdominal ultrasound to identify leiomyomas; MRI may help for adenomyosis and leiomyoma distinction or extent."@en ;
+    figo:hasSubtype figo:Transvaginal_Ultrasound , figo:Transabdominal_Ultrasound , figo:SIS , figo:Hysteroscopy , figo:MRI ;
+    figo:hasEvidence figo:ev_myometrial_assessment .
+
+#################################################################
+# Notation rules
+#################################################################
+
+figo:Presence_Absence_Notation a figo:NotationElement ;
+    rdfs:label "PALM-COEIN presence/absence notation"@en , "PALM-COEIN 유무 표기"@ko ;
+    skos:definition "Each PALM-COEIN component is addressed for all patients using 0 if absent, 1 if present, and ? if not yet assessed."@en ;
+    figo:hasFullNotation "AUB P0/1/? A0/1/? L0/1/? M0/1/? - C0/1/? O0/1/? E0/1/? I0/1/? N0/1/?" ;
+    figo:hasEvidence figo:ev_notation .
+
+figo:Example_Notation_LSM_O a figo:NotationElement ;
+    rdfs:label "Example notation: AUB-LSM;O"@en , "예시 표기: AUB-LSM;O"@ko ;
+    skos:definition "Example in which a patient has a disorder of ovulation and type 2 leiomyoma, with no other abnormalities."@en ;
+    figo:hasFullNotation "AUB P0 A0 L1(SM) M0 - C0 O1 E0 I0 N0" ;
+    figo:hasAbbreviatedNotation "AUB-LSM; O" ;
+    figo:hasEvidence figo:ev_notation_example .
+
+#################################################################
+# Selected etiologic / associated-factor nodes for retrieval
+#################################################################
+
+figo:Von_Willebrand_Disease a figo:ClassificationCategory ;
+    rdfs:label "von Willebrand disease"@en , "폰빌레브란트병"@ko ;
+    figo:mapsTo figo:AUB_C ;
+    figo:mayCauseOrContributeTo figo:Heavy_Menstrual_Bleeding .
+
+figo:Anticoagulant_Therapy a figo:ClassificationCategory ;
+    rdfs:label "Anticoagulant therapy"@en , "항응고제 치료"@ko ;
+    figo:mapsTo figo:AUB_C ;
+    figo:mayCauseOrContributeTo figo:Heavy_Menstrual_Bleeding ;
+    figo:hasClinicalNote "Anticoagulant-associated AUB is placed in AUB-C by convention, not AUB-I."@en .
+
+figo:PCOS a figo:ClassificationCategory ;
+    rdfs:label "Polycystic ovary syndrome"@en , "다낭성난소증후군"@ko ;
+    skos:altLabel "PCOS"@en ;
+    figo:mapsTo figo:AUB_O .
+
+figo:Hypothyroidism a figo:ClassificationCategory ;
+    rdfs:label "Hypothyroidism"@en , "갑상샘저하증"@ko ;
+    figo:mapsTo figo:AUB_O .
+
+figo:Hyperprolactinemia a figo:ClassificationCategory ;
+    rdfs:label "Hyperprolactinemia"@en , "고프로락틴혈증"@ko ;
+    figo:mapsTo figo:AUB_O .
+
+figo:Mental_Stress a figo:ClassificationCategory ;
+    rdfs:label "Mental stress"@en , "정신적 스트레스"@ko ;
+    figo:mapsTo figo:AUB_O .
+
+figo:Obesity a figo:ClassificationCategory ;
+    rdfs:label "Obesity"@en , "비만"@ko ;
+    figo:mapsTo figo:AUB_O .
+
+figo:Anorexia a figo:ClassificationCategory ;
+    rdfs:label "Anorexia"@en , "거식/식욕부진"@ko ;
+    figo:mapsTo figo:AUB_O .
+
+figo:Extreme_Exercise a figo:ClassificationCategory ;
+    rdfs:label "Extreme exercise"@en , "과도한 운동"@ko ;
+    figo:mapsTo figo:AUB_O .
+
+figo:Gonadal_Steroid_Therapy a figo:ClassificationCategory ;
+    rdfs:label "Gonadal steroid therapy"@en , "성선 스테로이드 치료"@ko ;
+    figo:mapsTo figo:AUB_I ;
+    figo:mayCauseOrContributeTo figo:Intermenstrual_Bleeding .
+
+figo:LNG_IUS a figo:ClassificationCategory ;
+    rdfs:label "Levonorgestrel-releasing intrauterine system"@en , "레보노르게스트렐 방출 자궁내 시스템"@ko ;
+    skos:altLabel "LNG-IUS"@en ;
+    figo:mapsTo figo:AUB_I .
+
+figo:Dopamine_Metabolism_Drug a figo:ClassificationCategory ;
+    rdfs:label "Drug impacting dopamine metabolism"@en , "도파민 대사 영향 약물"@ko ;
+    figo:mapsTo figo:AUB_I , figo:AUB_O ;
+    figo:mayCauseOrContributeTo figo:AUB .
+
+figo:Chronic_Endometritis a figo:ClassificationCategory ;
+    rdfs:label "Chronic endometritis"@en , "만성 자궁내막염"@ko ;
+    figo:mapsTo figo:AUB_N .
+
+figo:Arteriovenous_Malformation a figo:ClassificationCategory ;
+    rdfs:label "Arteriovenous malformation"@en , "동정맥 기형"@ko ;
+    figo:mapsTo figo:AUB_N .
+
+figo:Myometrial_Hypertrophy a figo:ClassificationCategory ;
+    rdfs:label "Myometrial hypertrophy"@en , "자궁근층 비대"@ko ;
+    figo:mapsTo figo:AUB_N .
+
+#################################################################
+# Evidence chunks from the attached guideline article
+#################################################################
+
+figo:ev_basic_system a figo:EvidenceChunk ;
+    figo:page 3 ;
+    figo:quote "There are 9 main categories arranged according to PALM-COEIN: polyp, adenomyosis, leiomyoma, malignancy and hyperplasia, coagulopathy, ovulatory dysfunction, endometrial, iatrogenic, and not yet classified."@en .
+
+figo:ev_acute_aub a figo:EvidenceChunk ;
+    figo:page 3 ;
+    figo:quote "Acute AUB was defined as an episode of heavy bleeding requiring immediate intervention to prevent further blood loss."@en .
+
+figo:ev_chronic_aub a figo:EvidenceChunk ;
+    figo:page 3 ;
+    figo:quote "Chronic AUB is bleeding from the uterine corpus abnormal in volume, regularity, and/or timing and present for most of the past 6 months."@en .
+
+figo:ev_imb a figo:EvidenceChunk ;
+    figo:page 3 ;
+    figo:quote "Intermenstrual bleeding occurs between clearly defined cyclic and predictable menses and replaces metrorrhagia."@en .
+
+figo:ev_dub_abandoned a figo:EvidenceChunk ;
+    figo:page 3 ;
+    figo:quote "The term DUB is not included in the system and should be abandoned."@en .
+
+figo:ev_polyp a figo:EvidenceChunk ;
+    figo:page 4 ;
+    figo:quote "Polyps are categorized as present or absent, defined by ultrasound and hysteroscopic imaging with or without histopathology."@en .
+
+figo:ev_adenomyosis a figo:EvidenceChunk ;
+    figo:page 4 ;
+    figo:quote "Sonographic criteria for adenomyosis comprise the minimum requirements for assigning adenomyosis in the PALM-COEIN system."@en .
+
+figo:ev_leiomyoma a figo:EvidenceChunk ;
+    figo:page 4 ;
+    figo:quote "Primary leiomyoma classification reflects presence or absence of one or more leiomyomas, regardless of location, number, and size."@en .
+
+figo:ev_lsm_lo a figo:EvidenceChunk ;
+    figo:page 4 ;
+    figo:quote "Secondary classification distinguishes leiomyomas involving the endometrial cavity, submucosal, from others."@en .
+
+figo:ev_leiomyoma_types a figo:EvidenceChunk ;
+    figo:page 5 ;
+    figo:quote "Types 0-8 classify leiomyomas by intracavitary, submucosal, intramural, subserosal, pedunculated, and other relationships."@en .
+
+figo:ev_malignancy_hyperplasia a figo:EvidenceChunk ;
+    figo:page 4 ;
+    figo:quote "When premalignant hyperplastic or malignant process is identified, it is classified as AUB-M and subclassified using WHO or FIGO systems."@en .
+
+figo:ev_coagulopathy a figo:EvidenceChunk ;
+    figo:page 4 ;
+    figo:quote "Coagulopathy encompasses systemic disorders of hemostasis associated with AUB; anticoagulation-associated AUB is categorized as C."@en .
+
+figo:ev_ovulatory_dysfunction a figo:EvidenceChunk ;
+    figo:page 5 ;
+    figo:quote "Ovulatory dysfunction generally manifests as unpredictable bleeding timing and variable flow and may be traced to endocrinopathies or iatrogenic causes."@en .
+
+figo:ev_endometrial a figo:EvidenceChunk ;
+    figo:page 5 ;
+    figo:quote "Endometrial disorders are probably determined by exclusion of other identifiable abnormalities in women who seem to have normal ovulatory function."@en .
+
+figo:ev_iatrogenic a figo:EvidenceChunk ;
+    figo:page 6 ;
+    figo:quote "Medical interventions, devices, gonadal steroid therapy, and pharmacologic agents can cause or contribute to AUB-I."@en .
+
+figo:ev_not_yet_classified a figo:EvidenceChunk ;
+    figo:page 6 ;
+    figo:quote "Not yet classified includes chronic endometritis, arteriovenous malformations, myometrial hypertrophy, and future molecular or biochemical entities."@en .
+
+figo:ev_notation a figo:EvidenceChunk ;
+    figo:page 6 ;
+    figo:quote "Each component is addressed for all patients using 0 if absent, 1 if present, and ? if not yet assessed."@en .
+
+figo:ev_notation_example a figo:EvidenceChunk ;
+    figo:page 6 ;
+    figo:quote "Example: AUB P0 A0 L1(SM) M0 - C0 O1 E0 I0 N0; abbreviated AUB-LSM; O."@en .
+
+figo:ev_general_assessment a figo:EvidenceChunk ;
+    figo:page 7 ;
+    figo:quote "Initial assessment excludes pregnancy and non-uterine sources and evaluates anemia with hemoglobin/hematocrit or full blood count."@en .
+
+figo:ev_uterine_evaluation a figo:EvidenceChunk ;
+    figo:page 8 ;
+    figo:quote "Uterine evaluation is guided by age, ovulatory disorder, risk factors for hyperplasia/malignancy, and structural anomaly risk."@en .
+
+figo:ev_cavity_evaluation a figo:EvidenceChunk ;
+    figo:page 7 ;
+    figo:quote "Structural evaluation of the endometrial cavity identifies polyps and submucosal leiomyomas that could contribute to AUB."@en .
+
+figo:ev_myometrial_assessment a figo:EvidenceChunk ;
+    figo:page 9 ;
+    figo:quote "Myometrium is assessed primarily with TVUS and transabdominal ultrasound to identify leiomyomas and evaluate adenomyosis."@en .

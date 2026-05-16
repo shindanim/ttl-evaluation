@@ -1,0 +1,120 @@
+@prefix ex: <http://example.org/figo/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# ---------------------------------------------------------
+# Core Concepts
+# ---------------------------------------------------------
+ex:AUB a ex:MedicalCondition ;
+    rdfs:label "Abnormal Uterine Bleeding" ;
+    ex:hasClassificationSystem ex:PALM_COEIN .
+
+ex:PALM_COEIN a ex:ClassificationSystem ;
+    rdfs:label "FIGO PALM-COEIN Classification System" ;
+    ex:hasCategoryGroup ex:Structural_PALM, ex:NonStructural_COEIN .
+
+# ---------------------------------------------------------
+# Main Groups
+# ---------------------------------------------------------
+ex:Structural_PALM a ex:CategoryGroup ;
+    rdfs:label "Structural Causes (PALM)" ;
+    rdfs:comment "Defined by visually objective structural criteria" ;
+    ex:includesCategory ex:AUB_P, ex:AUB_A, ex:AUB_L, ex:AUB_M .
+
+ex:NonStructural_COEIN a ex:CategoryGroup ;
+    rdfs:label "Non-structural Causes (COEIN)" ;
+    rdfs:comment "Unrelated to structural anomalies" ;
+    ex:includesCategory ex:AUB_C, ex:AUB_O, ex:AUB_E, ex:AUB_I, ex:AUB_N .
+
+# ---------------------------------------------------------
+# PALM Categories
+# ---------------------------------------------------------
+ex:AUB_P a ex:StructuralCategory ;
+    rdfs:label "Polyp" ;
+    ex:abbreviation "AUB-P" .
+
+ex:AUB_A a ex:StructuralCategory ;
+    rdfs:label "Adenomyosis" ;
+    ex:abbreviation "AUB-A" .
+
+ex:AUB_L a ex:StructuralCategory ;
+    rdfs:label "Leiomyoma" ;
+    ex:abbreviation "AUB-L" ;
+    ex:hasSubgroup ex:Leiomyoma_SM, ex:Leiomyoma_O .
+
+ex:AUB_M a ex:StructuralCategory ;
+    rdfs:label "Malignancy and hyperplasia" ;
+    ex:abbreviation "AUB-M" .
+
+# ---------------------------------------------------------
+# COEIN Categories
+# ---------------------------------------------------------
+ex:AUB_C a ex:NonStructuralCategory ;
+    rdfs:label "Coagulopathy" ;
+    ex:abbreviation "AUB-C" .
+
+ex:AUB_O a ex:NonStructuralCategory ;
+    rdfs:label "Ovulatory dysfunction" ;
+    ex:abbreviation "AUB-O" .
+
+ex:AUB_E a ex:NonStructuralCategory ;
+    rdfs:label "Endometrial" ;
+    ex:abbreviation "AUB-E" .
+
+ex:AUB_I a ex:NonStructuralCategory ;
+    rdfs:label "Iatrogenic" ;
+    ex:abbreviation "AUB-I" .
+
+ex:AUB_N a ex:NonStructuralCategory ;
+    rdfs:label "Not yet classified" ;
+    ex:abbreviation "AUB-N" .
+
+# ---------------------------------------------------------
+# Leiomyoma (AUB-L) Subclassifications
+# ---------------------------------------------------------
+ex:Leiomyoma_SM a ex:LeiomyomaGroup ;
+    rdfs:label "Submucosal (SM)" ;
+    rdfs:comment "Leiomyomas that impact the endometrial cavity" ;
+    ex:hasType ex:Leiomyoma_Type_0, ex:Leiomyoma_Type_1, ex:Leiomyoma_Type_2 .
+
+ex:Leiomyoma_O a ex:LeiomyomaGroup ;
+    rdfs:label "Other (O)" ;
+    rdfs:comment "Leiomyomas that do not impact the endometrial cavity" ;
+    ex:hasType ex:Leiomyoma_Type_3, ex:Leiomyoma_Type_4, ex:Leiomyoma_Type_5, ex:Leiomyoma_Type_6, ex:Leiomyoma_Type_7, ex:Leiomyoma_Type_8 .
+
+ex:Leiomyoma_Type_0 a ex:LeiomyomaType ;
+    rdfs:label "Type 0" ;
+    rdfs:comment "Pedunculated intracavitary" .
+
+ex:Leiomyoma_Type_1 a ex:LeiomyomaType ;
+    rdfs:label "Type 1" ;
+    rdfs:comment "<50% intramural" .
+
+ex:Leiomyoma_Type_2 a ex:LeiomyomaType ;
+    rdfs:label "Type 2" ;
+    rdfs:comment ">=50% intramural" .
+
+ex:Leiomyoma_Type_3 a ex:LeiomyomaType ;
+    rdfs:label "Type 3" ;
+    rdfs:comment "Contacts endometrium; 100% intramural" .
+
+ex:Leiomyoma_Type_4 a ex:LeiomyomaType ;
+    rdfs:label "Type 4" ;
+    rdfs:comment "Intramural" .
+
+ex:Leiomyoma_Type_5 a ex:LeiomyomaType ;
+    rdfs:label "Type 5" ;
+    rdfs:comment "Subserosal >=50% intramural" .
+
+ex:Leiomyoma_Type_6 a ex:LeiomyomaType ;
+    rdfs:label "Type 6" ;
+    rdfs:comment "Subserosal <50% intramural" .
+
+ex:Leiomyoma_Type_7 a ex:LeiomyomaType ;
+    rdfs:label "Type 7" ;
+    rdfs:comment "Subserosal pedunculated" .
+
+ex:Leiomyoma_Type_8 a ex:LeiomyomaType ;
+    rdfs:label "Type 8" ;
+    rdfs:comment "Other (specify e.g. cervical, parasitic)" .

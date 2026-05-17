@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from html import escape
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -95,12 +96,12 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
 
     matched_items = []
     for index, match in enumerate(eval_result.get("matches", []), start=1):
-        true_triple = " | ".join(match["true"])
-        pred_triple = " | ".join(match["pred"])
+        true_triple = escape(" | ".join(match["true"]))
+        pred_triple = escape(" | ".join(match["pred"]))
         matched_items.append(
             f"""
             <li>
-              <div class="match-row-title">#{index} score={match["score"]}</div>
+              <div class="match-row-title">#{index} score={escape(str(match["score"]))}</div>
               <div><strong>true</strong>: {true_triple}</div>
               <div><strong>pred</strong>: {pred_triple}</div>
             </li>
@@ -113,10 +114,19 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
     <style>
       body {{ margin: 0; font-family: Inter, Segoe UI, sans-serif; color: #242424; }}
       .kg-toolbar {{
-        display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+        display: flex; align-items: stretch; gap: 12px; padding: 12px 16px;
         flex-wrap: wrap;
         border-bottom: 1px solid #ddd; background: #ffffff;
       }}
+      .toolbar-section {{
+        display: flex; flex-direction: column; gap: 6px; min-width: 220px;
+        padding: 10px 12px; border: 1px solid #e2e2dd; border-radius: 8px;
+        background: #fbfbf8;
+      }}
+      .toolbar-section.evaluation {{ min-width: 260px; }}
+      .section-title {{ font-size: 12px; font-weight: 800; text-transform: uppercase; color: #303030; }}
+      .section-help {{ font-size: 12px; color: #666; line-height: 1.35; }}
+      .button-row {{ display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }}
       .kg-toolbar button {{
         border: 1px solid #b7b7b7; background: #fff; padding: 8px 12px;
         border-radius: 6px; cursor: pointer; font-weight: 600;
@@ -125,8 +135,10 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
       .kg-toolbar input {{
         width: 76px; padding: 7px 8px; border: 1px solid #b7b7b7; border-radius: 6px;
       }}
-      .mode-group {{
-        display: inline-flex; gap: 6px; align-items: center; padding-right: 4px;
+      .threshold-control {{ display: inline-flex; gap: 6px; align-items: center; font-size: 12px; color: #555; }}
+      .metric-strip {{
+        display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+        padding: 0 16px 10px 16px; border-bottom: 1px solid #ddd; background: #ffffff;
       }}
       .metric {{ font-size: 14px; color: #555; }}
       .match-panel {{
@@ -139,17 +151,38 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
       .match-row-title {{ font-weight: 700; color: #9c2628; }}
     </style>
     <div class="kg-toolbar">
-      <button class="view-filter active" data-view="all">All</button>
-      <button class="view-filter" data-view="true">true.ttl</button>
-      <button class="view-filter" data-view="pred">pred.ttl</button>
-      <span class="mode-group">
-        <button class="mode-button" data-mode="strict">Strict</button>
-        <button class="mode-button" data-mode="cosine">Cosine</button>
-        <input id="thresholdInput" type="number" min="0" max="1" step="0.01" value="{threshold_value}">
-      </span>
-      <button id="toggleMatched" class="active">Highlight matched nodes</button>
-      <button id="toggleMatchedTriples">Matched triples</button>
-      <button id="fitGraph">Fit graph</button>
+      <section class="toolbar-section">
+        <div class="section-title">Draw</div>
+        <div class="section-help">Choose which graph set is drawn. Pred Set is the default view.</div>
+        <div class="button-row">
+          <button class="view-filter" data-view="all" title="Draw true.ttl and pred.ttl together.">All</button>
+          <button class="view-filter" data-view="true" title="Draw only the gold/reference graph from true.ttl.">True Set</button>
+          <button class="view-filter active" data-view="pred" title="Draw only the predicted graph from pred.ttl.">Pred Set</button>
+        </div>
+      </section>
+      <section class="toolbar-section">
+        <div class="section-title">Config</div>
+        <div class="section-help">Tune highlighting, inspect matches, or refit the current graph.</div>
+        <div class="button-row">
+          <button id="toggleMatched" class="active" title="Show matched nodes in red.">Highlight matched nodes</button>
+          <button id="toggleMatchedTriples" title="Open a text list of matched triples and similarity scores.">Matched triples</button>
+          <button id="fitGraph" title="Center and zoom the current graph into view.">Fit graph</button>
+        </div>
+      </section>
+      <section class="toolbar-section evaluation">
+        <div class="section-title">Evaluation Mode</div>
+        <div class="section-help">Strict requires exact triples. Cosine uses embedding similarity with the threshold below.</div>
+        <div class="button-row">
+          <button class="mode-button" data-mode="strict" title="Match only exactly identical triples.">Strict</button>
+          <button class="mode-button" data-mode="cosine" title="Match triples by cosine similarity.">Cosine</button>
+          <label class="threshold-control" title="Minimum cosine score used in Cosine mode.">
+            Threshold
+            <input id="thresholdInput" type="number" min="0" max="1" step="0.01" value="{threshold_value}">
+          </label>
+        </div>
+      </section>
+    </div>
+    <div class="metric-strip">
       <span class="metric">Mode: {eval_result["mode"]}</span>
       <span class="metric">Precision: {eval_result["precision"]:.3f}</span>
       <span class="metric">Recall: {eval_result["recall"]:.3f}</span>
@@ -165,7 +198,7 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
       const normalColors = {{ true: "{COLORS["default_true"]}", pred: "{COLORS["default_pred"]}", matched: "{COLORS["matched"]}" }};
       const currentMode = "{eval_result["mode"]}";
       let highlighted = true;
-      let currentView = "all";
+      let currentView = "pred";
 
       function nodeNamespace(node) {{
         return node.id.split(":")[0];

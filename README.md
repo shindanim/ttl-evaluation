@@ -37,7 +37,7 @@ python -m kg_eval.evaluator --true examples/true.ttl --pred examples/pred.ttl --
 python -m kg_eval.visualize --true examples/true.ttl --pred examples/pred.ttl --output kg_visualization.html --mode strict
 ```
 
-생성된 HTML에는 `All`, `true.ttl`, `pred.ttl` 보기 버튼과 `Highlight matched nodes` 토글 버튼이 있습니다. 켜져 있으면 매칭된 노드가 빨간색으로 표시되고, 끄면 true/pred 그래프 기본 색상으로 돌아갑니다.
+생성된 HTML 상단에는 `Draw`, `Config`, `Evaluation Mode` 섹션이 있습니다. `Draw`에서는 `All`, `True Set`, `Pred Set` 보기 버튼을 제공하며, 기본값은 `Pred Set`입니다. `Highlight matched nodes`가 켜져 있으면 매칭된 노드가 빨간색으로 표시되고, 끄면 true/pred 그래프 기본 색상으로 돌아갑니다.
 
 서버로 볼 때는 상단의 `Strict`, `Cosine` 버튼으로 평가 모드를 전환할 수 있습니다. `Matched triples` 버튼을 누르면 매칭된 triple 목록을 텍스트로 확인할 수 있습니다.
 

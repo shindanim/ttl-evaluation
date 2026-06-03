@@ -31,6 +31,12 @@ Cosine 모드는 triple의 subject, predicate, object 라벨을 각각 임베딩
 python -m kg_eval.evaluator --true examples/true.ttl --pred examples/pred.ttl --mode cosine --threshold 0.75
 ```
 
+Cross 모드는 `cross-encoder/ms-marco-MiniLM-L-6-v2` 모델로 true triple과 pred triple 쌍을 직접 점수화한 뒤 threshold 이상인 best match를 찾습니다.
+
+```powershell
+python -m kg_eval.evaluator --true examples/true.ttl --pred examples/pred.ttl --mode cross --threshold 0.0
+```
+
 ## HTML 시각화 파일 생성
 
 ```powershell
@@ -39,7 +45,7 @@ python -m kg_eval.visualize --true examples/true.ttl --pred examples/pred.ttl --
 
 생성된 HTML 상단에는 `Draw`, `Config`, `Evaluation Mode` 섹션이 있습니다. `Draw`에서는 `All`, `True Set`, `Pred Set` 보기 버튼을 제공하며, 기본값은 `Pred Set`입니다. `Highlight matched nodes`가 켜져 있으면 매칭된 노드가 빨간색으로 표시되고, 끄면 true/pred 그래프 기본 색상으로 돌아갑니다.
 
-서버로 볼 때는 상단의 `Strict`, `Cosine` 버튼으로 평가 모드를 전환할 수 있습니다. `Matched triples` 버튼을 누르면 매칭된 triple 목록을 텍스트로 확인할 수 있습니다.
+서버로 볼 때는 상단의 `Strict`, `Cosine`, `Cross` 버튼으로 평가 모드를 전환할 수 있습니다. `Matched triples` 버튼을 누르면 매칭된 triple 목록을 텍스트로 확인할 수 있습니다.
 
 ## 서버로 띄우기
 
@@ -63,4 +69,10 @@ Cosine 시각화는 처음 실행 시 SentenceTransformer 모델을 다운로드
 
 ```text
 http://127.0.0.1:5000/?mode=cosine&threshold=0.75
+```
+
+Cross 시각화는 처음 실행 시 CrossEncoder 모델을 다운로드할 수 있습니다.
+
+```text
+http://127.0.0.1:5000/?mode=cross&threshold=0.0
 ```

@@ -5,8 +5,16 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request
 
-from kg_eval.evaluator import evaluate
+from kg_eval.evaluator import default_model_for_mode, evaluate
 from kg_eval.visualize import make_network
+
+
+def request_options() -> tuple[str, float, str]:
+    mode = request.args.get("mode", "strict")
+    default_threshold = "0.0" if mode == "cross" else "0.85"
+    threshold = float(request.args.get("threshold", default_threshold))
+    model = request.args.get("model", default_model_for_mode(mode))
+    return mode, threshold, model
 
 
 def create_app(true_ttl: str | Path, pred_ttl: str | Path) -> Flask:
@@ -16,17 +24,13 @@ def create_app(true_ttl: str | Path, pred_ttl: str | Path) -> Flask:
 
     @app.get("/")
     def index():
-        mode = request.args.get("mode", "strict")
-        threshold = float(request.args.get("threshold", "0.85"))
-        model = request.args.get("model", "sentence-transformers/all-MiniLM-L6-v2")
+        mode, threshold, model = request_options()
         result = evaluate(true_path, pred_path, mode, threshold, model)
         return make_network(true_path, pred_path, result)
 
     @app.get("/api/evaluate")
     def api_evaluate():
-        mode = request.args.get("mode", "strict")
-        threshold = float(request.args.get("threshold", "0.85"))
-        model = request.args.get("model", "sentence-transformers/all-MiniLM-L6-v2")
+        mode, threshold, model = request_options()
         return jsonify(evaluate(true_path, pred_path, mode, threshold, model))
 
     return app
@@ -49,4 +53,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

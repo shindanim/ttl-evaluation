@@ -131,7 +131,7 @@
         padding: 10px 12px; border: 1px solid #e2e2dd; border-radius: 8px;
         background: #fbfbf8;
       }
-      .toolbar-section.evaluation { min-width: 260px; }
+      .toolbar-section.evaluation { min-width: 330px; }
       .section-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #303030; }
       .section-help { font-size: 12px; color: #666; line-height: 1.35; }
       .button-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -179,13 +179,14 @@
       </section>
       <section class="toolbar-section evaluation">
         <div class="section-title">Evaluation Mode</div>
-        <div class="section-help">Strict requires exact triples. Cosine uses embedding similarity with the threshold below.</div>
+        <div class="section-help">Strict requires exact triples. Cosine compares embeddings. Cross scores true/pred pairs with a reranker.</div>
         <div class="button-row">
           <button class="mode-button" data-mode="strict" title="Match only exactly identical triples.">Strict</button>
           <button class="mode-button" data-mode="cosine" title="Match triples by cosine similarity.">Cosine</button>
-          <label class="threshold-control" title="Minimum cosine score used in Cosine mode.">
+          <button class="mode-button" data-mode="cross" title="Score triple pairs with cross-encoder/ms-marco-MiniLM-L-6-v2.">Cross</button>
+          <label class="threshold-control" title="Minimum score used in Cosine or Cross mode.">
             Threshold
-            <input id="thresholdInput" type="number" min="0" max="1" step="0.01" value="0.85">
+            <input id="thresholdInput" type="number" step="0.01" value="0.85">
           </label>
         </div>
       </section>
@@ -379,7 +380,7 @@
             const mode = event.currentTarget.dataset.mode;
             const params = new URLSearchParams(window.location.search);
             params.set("mode", mode);
-            if (mode === "cosine") {
+            if (mode === "cosine" || mode === "cross") {
               params.set("threshold", document.getElementById("thresholdInput").value || "0.85");
             } else {
               params.delete("threshold");

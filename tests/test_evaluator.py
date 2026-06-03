@@ -1,4 +1,4 @@
-from kg_eval.evaluator import evaluate_strict
+from kg_eval.evaluator import DEFAULT_CROSS_ENCODER_MODEL, default_model_for_mode, evaluate_strict
 
 
 def test_evaluate_strict_examples(tmp_path):
@@ -33,3 +33,7 @@ def test_evaluate_strict_examples(tmp_path):
     assert result["precision"] == 0.5
     assert result["recall"] == 0.5
     assert result["f1"] == 0.5
+
+
+def test_cross_mode_default_model():
+    assert default_model_for_mode("cross") == DEFAULT_CROSS_ENCODER_MODEL

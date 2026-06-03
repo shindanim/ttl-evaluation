@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 
 from pyvis.network import Network
 
-from kg_eval.evaluator import evaluate, load_triples
+from kg_eval.evaluator import default_model_for_mode, evaluate, load_triples
 
 
 COLORS = {
@@ -123,7 +123,7 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
         padding: 10px 12px; border: 1px solid #e2e2dd; border-radius: 8px;
         background: #fbfbf8;
       }}
-      .toolbar-section.evaluation {{ min-width: 260px; }}
+      .toolbar-section.evaluation {{ min-width: 330px; }}
       .section-title {{ font-size: 12px; font-weight: 800; text-transform: uppercase; color: #303030; }}
       .section-help {{ font-size: 12px; color: #666; line-height: 1.35; }}
       .button-row {{ display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }}
@@ -171,13 +171,14 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
       </section>
       <section class="toolbar-section evaluation">
         <div class="section-title">Evaluation Mode</div>
-        <div class="section-help">Strict requires exact triples. Cosine uses embedding similarity with the threshold below.</div>
+        <div class="section-help">Strict requires exact triples. Cosine compares embeddings. Cross scores true/pred pairs with a reranker.</div>
         <div class="button-row">
           <button class="mode-button" data-mode="strict" title="Match only exactly identical triples.">Strict</button>
           <button class="mode-button" data-mode="cosine" title="Match triples by cosine similarity.">Cosine</button>
-          <label class="threshold-control" title="Minimum cosine score used in Cosine mode.">
+          <button class="mode-button" data-mode="cross" title="Score triple pairs with cross-encoder/ms-marco-MiniLM-L-6-v2.">Cross</button>
+          <label class="threshold-control" title="Minimum score used in Cosine or Cross mode.">
             Threshold
-            <input id="thresholdInput" type="number" min="0" max="1" step="0.01" value="{threshold_value}">
+            <input id="thresholdInput" type="number" step="0.01" value="{threshold_value}">
           </label>
         </div>
       </section>
@@ -239,7 +240,7 @@ def make_network(true_ttl: str | Path, pred_ttl: str | Path, eval_result: dict) 
             const mode = event.currentTarget.dataset.mode;
             const params = new URLSearchParams(window.location.search);
             params.set("mode", mode);
-            if (mode === "cosine") {{
+            if (mode === "cosine" || mode === "cross") {{
               params.set("threshold", document.getElementById("thresholdInput").value || "0.85");
             }} else {{
               params.delete("threshold");
@@ -279,10 +280,12 @@ def write_html(
     pred_ttl: str | Path,
     output_path: str | Path,
     mode: str = "strict",
-    threshold: float = 0.85,
-    model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+    threshold: float | None = None,
+    model_name: str | None = None,
 ) -> Path:
-    eval_result = evaluate(true_ttl, pred_ttl, mode, threshold, model_name)
+    if threshold is None:
+        threshold = 0.0 if mode == "cross" else 0.85
+    eval_result = evaluate(true_ttl, pred_ttl, mode, threshold, model_name or default_model_for_mode(mode))
     html = make_network(true_ttl, pred_ttl, eval_result)
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -295,9 +298,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--true", required=True, dest="true_ttl")
     parser.add_argument("--pred", required=True, dest="pred_ttl")
     parser.add_argument("--output", default="kg_visualization.html")
-    parser.add_argument("--mode", choices=["strict", "cosine"], default="strict")
-    parser.add_argument("--threshold", type=float, default=0.85)
-    parser.add_argument("--model", default="sentence-transformers/all-MiniLM-L6-v2")
+    parser.add_argument("--mode", choices=["strict", "cosine", "cross"], default="strict")
+    parser.add_argument("--threshold", type=float, default=None)
+    parser.add_argument("--model", default=None)
     return parser
 
 
